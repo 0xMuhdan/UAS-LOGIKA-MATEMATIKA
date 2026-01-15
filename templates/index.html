@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>Sistem Pakar Mitigasi Bencana Aceh - Prediksi Banjir Berbasis Logika</title>
+    <meta name="description" content="Aplikasi web untuk prediksi risiko banjir di Aceh menggunakan logika proposisional dan tabel kebenaran. Analisis real-time dengan Python backend.">
+    <meta name="keywords" content="mitigasi bencana, banjir aceh, logika proposisional, sistem pakar, prediksi banjir">
+    <meta name="author" content="Sistem Pakar Aceh">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Sistem Pakar Mitigasi Bencana Aceh">
+    <meta property="og:description" content="Prediksi risiko banjir berbasis logika matematika">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1562544294-3484049612ce?w=1200">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Sistem Pakar Mitigasi Bencana Aceh">
+    <meta name="twitter:description" content="Prediksi risiko banjir berbasis logika matematika">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌊</text></svg>">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Custom animations */
+        @keyframes pulse-danger {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.9;
+            }
+        }
+        
+        .pulse-danger {
+            animation: pulse-danger 2s ease-in-out infinite;
+        }
+        
+        /* Team member animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        
+        .hover-lift {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Toggle Switch Styling */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #3b82f6;
+        }
+        
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #3b82f6;
+        }
+        
+        /* Highlighted row in truth table */
+        .highlight-row {
+            background-color: #fef3c7 !important;
+            font-weight: 600;
+            border: 2px solid #f59e0b;
+        }
+        
+        /* Mathematical notation styling */
+        .math-symbol {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Line clamp utilities */
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Print styles */
+        @media print {
+            header, footer, #articles-container, .no-print {
+                display: none;
+            }
+            body {
+                background: white;
+            }
+        }
+
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Focus visible for accessibility */
+        *:focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+        
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-slate-200 min-h-screen">
+    
+    <!-- Header Section -->
+    <header class="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-2xl">
+        <div class="container mx-auto px-4 py-8">
+            <div class="flex items-center justify-center gap-4 mb-3">
+                <i class="fas fa-water text-4xl"></i>
+                <h1 class="text-4xl md:text-5xl font-bold">Sistem Pakar Mitigasi Bencana</h1>
+            </div>
+            <p class="text-center text-blue-100 text-lg">
+                <i class="fas fa-calculator mr-2"></i>
+                Implementasi Logika Matematika (Tabel Kebenaran)
+            </p>
+            <p class="text-center text-blue-200 text-sm mt-2">
+                Prediksi Banjir Berbasis Logika Proposisional - Python Backend
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        
+        <!-- Control Panel & Visualization Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            
+            <!-- Left Side: Control Panel -->
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3">
+                    <i class="fas fa-sliders text-blue-600"></i>
+                    Panel Kontrol Variabel
+                </h2>
+                
+                <!-- Variable p: Rainfall -->
+                <div class="mb-8 p-6 bg-slate-50 rounded-xl border-2 border-slate-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-cloud-rain text-3xl text-blue-500"></i>
+                            <div>
+                                <h3 class="text-lg font-semibold text-slate-800">
+                                    <span class="math-symbol text-blue-600">p:</span> Curah Hujan Tinggi
+                                </h3>
+                                <p class="text-sm text-slate-600">Intensitas hujan > 100mm/hari</p>
+                            </div>
+                        </div>
+                        <!-- Toggle Switch -->
+                        <div class="relative inline-block w-16 h-8">
+                            <input 
+                                type="checkbox" 
+                                id="toggle-p" 
+                                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer top-1 left-1" 
+                                onchange="updateSystem()"
+                                aria-label="Toggle curah hujan tinggi"
+                                role="switch"
+                            >
+                            <label for="toggle-p" class="toggle-label block overflow-hidden h-8 rounded-full bg-slate-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variable q: Deforestation -->
+                <div class="mb-8 p-6 bg-slate-50 rounded-xl border-2 border-slate-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-tree text-3xl text-green-600"></i>
+                            <div>
+                                <h3 class="text-lg font-semibold text-slate-800">
+                                    <span class="math-symbol text-green-600">q:</span> Alih Fungsi Lahan Sawit
+                                </h3>
+                                <p class="text-sm text-slate-600">Deforestasi & konversi lahan</p>
+                            </div>
+                        </div>
+                        <!-- Toggle Switch -->
+                        <div class="relative inline-block w-16 h-8">
+                            <input 
+                                type="checkbox" 
+                                id="toggle-q" 
+                                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer top-1 left-1" 
+                                onchange="updateSystem()"
+                                aria-label="Toggle alih fungsi lahan sawit"
+                                role="switch"
+                            >
+                            <label for="toggle-q" class="toggle-label block overflow-hidden h-8 rounded-full bg-slate-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variable r: Drainage -->
+                <div class="p-6 bg-slate-50 rounded-xl border-2 border-slate-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-water text-3xl text-cyan-600"></i>
+                            <div>
+                                <h3 class="text-lg font-semibold text-slate-800">
+                                    <span class="math-symbol text-cyan-600">r:</span> Sungai Dangkal/Sempit
+                                </h3>
+                                <p class="text-sm text-slate-600">Drainase buruk & sedimentasi</p>
+                            </div>
+                        </div>
+                        <!-- Toggle Switch -->
+                        <div class="relative inline-block w-16 h-8">
+                            <input 
+                                type="checkbox" 
+                                id="toggle-r" 
+                                class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer top-1 left-1" 
+                                onchange="updateSystem()"
+                                aria-label="Toggle sungai dangkal/sempit"
+                                role="switch"
+                            >
+                            <label for="toggle-r" class="toggle-label block overflow-hidden h-8 rounded-full bg-slate-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Visualization Panel -->
+            <div class="space-y-6">
+                
+                <!-- Formula Display -->
+                <div class="bg-white rounded-2xl shadow-xl p-8">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-3">
+                        <i class="fas fa-function text-purple-600"></i>
+                        Formula Logika Proposisional
+                    </h2>
+                    <div class="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-xl border-2 border-purple-200">
+                        <p class="text-3xl font-bold text-center text-slate-800 math-symbol">
+                            S = p ∧ (q ∨ r)
+                        </p>
+                        <p class="text-center text-slate-600 mt-3 text-sm">
+                            Risiko Banjir = Hujan Tinggi DAN (Lahan Rusak ATAU Sungai Buruk)
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Logic Trace -->
+                <div class="bg-white rounded-2xl shadow-xl p-8">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-3">
+                        <i class="fas fa-route text-orange-600"></i>
+                        Trace Perhitungan (Python Backend)
+                    </h2>
+                    <div id="logic-trace" class="space-y-3">
+                        <div class="flex justify-center py-8">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Card -->
+                <div id="status-card" class="rounded-2xl shadow-2xl p-8 text-center">
+                    <div class="flex flex-col items-center gap-4">
+                        <i id="status-icon" class="text-6xl"></i>
+                        <h3 id="status-title" class="text-3xl font-bold"></h3>
+                        <p id="status-subtitle" class="text-lg"></p>
+                    </div>
+                </div>
+
+                <!-- Recommendation -->
+                <div class="bg-white rounded-2xl shadow-xl p-8">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-3">
+                        <i class="fas fa-lightbulb text-yellow-500"></i>
+                        Rekomendasi Mitigasi
+                    </h2>
+                    <div id="recommendation" class="bg-yellow-50 p-6 rounded-xl border-2 border-yellow-200">
+                        <div class="flex justify-center py-4">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Articles Section -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
+                    <i class="fas fa-newspaper text-blue-600"></i>
+                    Artikel & Berita Mitigasi Bencana
+                </h2>
+                <span class="text-sm text-slate-500">
+                    <i class="fas fa-clock mr-1"></i>
+                    Update Terbaru
+                </span>
+            </div>
+            
+            <p class="text-slate-600 mb-8">
+                Informasi terkini seputar mitigasi bencana, tips kesiapsiagaan, dan program pencegahan banjir.
+            </p>
+            
+            <div id="articles-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Articles will be loaded here -->
+                <div class="col-span-full flex justify-center py-12">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Section -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3">
+                    <i class="fas fa-history text-purple-600"></i>
+                    Riwayat Analisis
+                </h2>
+                <button 
+                    onclick="clearHistory()" 
+                    class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-semibold transition-all duration-300 flex items-center gap-2"
+                    aria-label="Hapus semua riwayat"
+                >
+                    <i class="fas fa-trash"></i>
+                    Hapus Riwayat
+                </button>
+            </div>
+            
+            <div id="history-empty" class="text-center py-12 text-slate-400">
+                <i class="fas fa-inbox text-6xl mb-4"></i>
+                <p class="text-lg">Belum ada riwayat analisis</p>
+                <p class="text-sm mt-2">Ubah variabel untuk membuat analisis pertama Anda</p>
+            </div>
+            
+            <div id="history-container" class="space-y-4 hidden">
+                <!-- History items will be inserted here -->
+            </div>
+            
+            <div id="history-stats" class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-chart-line text-2xl text-blue-600"></i>
+                        <div>
+                            <p class="text-xs text-blue-600 font-semibold">Total Analisis</p>
+                            <p id="total-analyses" class="text-2xl font-bold text-blue-800">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-br from-red-50 to-red-100 p-4 rounded-lg border border-red-200">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-exclamation-triangle text-2xl text-red-600"></i>
+                        <div>
+                            <p class="text-xs text-red-600 font-semibold">Deteksi Banjir</p>
+                            <p id="flood-detected" class="text-2xl font-bold text-red-800">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg border border-green-200">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-shield-alt text-2xl text-green-600"></i>
+                        <div>
+                            <p class="text-xs text-green-600 font-semibold">Kondisi Aman</p>
+                            <p id="safe-conditions" class="text-2xl font-bold text-green-800">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Truth Table Section -->
+        <div class="bg-white rounded-2xl shadow-xl p-8">
+            <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3">
+                <i class="fas fa-table text-indigo-600"></i>
+                Tabel Kebenaran Lengkap
+            </h2>
+            <p class="text-slate-600 mb-6">
+                Tabel di bawah menampilkan semua 8 kombinasi kemungkinan. Baris yang sesuai dengan input Anda saat ini akan <span class="font-bold text-yellow-600">di-highlight</span>.
+            </p>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse" id="truth-table">
+                    <thead>
+                        <tr class="bg-gradient-to-r from-indigo-600 to-blue-600 text-white">
+                            <th class="border-2 border-slate-300 px-6 py-4 text-center font-bold">
+                                <span class="math-symbol">p</span><br>
+                                <span class="text-xs font-normal">(Hujan)</span>
+                            </th>
+                            <th class="border-2 border-slate-300 px-6 py-4 text-center font-bold">
+                                <span class="math-symbol">q</span><br>
+                                <span class="text-xs font-normal">(Lahan)</span>
+                            </th>
+                            <th class="border-2 border-slate-300 px-6 py-4 text-center font-bold">
+                                <span class="math-symbol">r</span><br>
+                                <span class="text-xs font-normal">(Sungai)</span>
+                            </th>
+                            <th class="border-2 border-slate-300 px-6 py-4 text-center font-bold">
+                                <span class="math-symbol">q ∨ r</span><br>
+                                <span class="text-xs font-normal">(Lahan OR Sungai)</span>
+                            </th>
+                            <th class="border-2 border-slate-300 px-6 py-4 text-center font-bold">
+                                <span class="math-symbol">S = p ∧ (q ∨ r)</span><br>
+                                <span class="text-xs font-normal">(Risiko Banjir)</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="truth-table-body">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap justify-center gap-4 mb-8 no-print">
+            <button 
+                onclick="window.print()" 
+                class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg transition-all duration-300 flex items-center gap-2 font-semibold"
+                aria-label="Print halaman"
+            >
+                <i class="fas fa-print"></i>
+                Print Hasil
+            </button>
+            <button 
+                onclick="resetToggles()" 
+                class="px-6 py-3 bg-slate-600 hover:bg-slate-700 text-white rounded-lg shadow-lg transition-all duration-300 flex items-center gap-2 font-semibold"
+                aria-label="Reset semua toggle"
+            >
+                <i class="fas fa-redo"></i>
+                Reset
+            </button>
+            <button 
+                onclick="scrollToTop()" 
+                class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-lg transition-all duration-300 flex items-center gap-2 font-semibold"
+                aria-label="Scroll ke atas"
+            >
+                <i class="fas fa-arrow-up"></i>
+                Ke Atas
+            </button>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-12 pb-8">
+            <!-- Team Section -->
+            <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-2xl shadow-2xl p-8 mb-6 mx-4">
+                <div class="text-center mb-8">
+                    <h3 class="text-2xl font-bold mb-2 flex items-center justify-center gap-2">
+                        <i class="fas fa-users"></i>
+                        Tim Pengembang
+                    </h3>
+                    <p class="text-blue-100 text-sm">Proyek Akhir Universitas - Sistem Pakar Berbasis Logika Matematika</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    <!-- Member 1: Agna -->
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center hover:bg-white/20 hover-lift animate-fade-in-up delay-100">
+                        <img 
+                            src="/static/images/team/agna.jpg" 
+                            alt="Agna Khoerunnisa"
+                            class="w-32 h-32 rounded-full mx-auto object-cover border-4 border-white/30 mb-4"
+                            onerror="this.src='https://i.pravatar.cc/150?u=agna'"
+                        >
+                        <h4 class="font-bold text-xl mb-2">Agna Khoerunnisa</h4>
+                        <div class="inline-flex items-center gap-2 bg-white/20 px-3 py-1 rounded-full mb-2">
+                            <i class="fas fa-id-card text-xs"></i>
+                            <span class="text-sm font-semibold">2510614068</span>
+                        </div>
+                        <p class="text-blue-200 text-sm mb-4">
+                            <i class="fas fa-laptop-code mr-1"></i>
+                            Frontend Developer
+                        </p>
+                        <div class="flex items-center justify-center gap-3">
+                            <a href="https://instagram.com/agnakhoerunnisa" target="_blank" rel="noopener noreferrer" class="text-white hover:text-blue-200" title="Instagram">
+                                <i class="fab fa-instagram text-xl"></i>
+                            </a>
+                            <a href="https://linkedin.com/in/agnakhoerunnisa" target="_blank" rel="noopener noreferrer" class="text-white hover:text-blue-200" title="LinkedIn">
+                                <i class="fab fa-linkedin text-xl"></i>
+                            </a>
+                            <a href="https://github.com/agnakhoerunnisa" target="_blank" rel="noopener noreferrer" class="text-white hover:text-blue-200" title="GitHub">
+                                <i class="fab fa-github text-xl"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Member 2: Muhdan -->
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center hover:bg-white/20 hover-lift animate-fade-in-up delay-200">
+                        <img 
+                            src="/static/images/team/muhdan.jpg" 
+                            alt="Muhdan Firdaus Salam"
+                            class="w-32 h-32 rounded-full mx-auto object-cover border-4 border-white/30 mb-4"
+                            onerror="this.src='https://i.pravatar.cc/150?u=muhdan'"
+                        >
+                        <h4 class="font-bold text-xl mb-2">Muhdan Firdaus Salam</h4>
+                        <div class="inline-flex items-center gap-2 bg-white/20 px-3 py-1 rounded-full mb-2">
+                            <i class="fas fa-id-card text-xs"></i>
+                            <span class="text-sm font-semibold">2510614067</span>
+                        </div>
+                        <p class="text-blue-200 text-sm mb-4">
+                            <i class="fas fa-server mr-1"></i>
+                            Backend Developer
+                        </p>
+                        <div class="flex items-center justify-center gap-3">
+                            <a href="https://instagram.com/muhdanfirdaus" target="_blank" rel="noopener noreferrer" class="text-white hover:text-blue-200" title="Instagram">
+                                <i class="fab fa-instagram text-xl"></i>
+                            </a>
+                            <a href="https://linkedin.com/in/muhdanfirdaus" target="_blank" rel="noopener noreferrer" class="text-white hover:text-blue-200" title="LinkedIn">
+                                <i class="fab fa-linkedin text-xl"></i>
+                            </a>
+                            <a href="https://github.com/muhdanfirdaus" target="_blank" rel="noopener noreferrer" class="text-white hover:text-blue-200" title="GitHub">
+                                <i class="fab fa-github text-xl"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Member 3: Ilman -->
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center hover:bg-white/20 hover-lift animate-fade-in-up delay-300">
+                        <img 
+                            src="/static/images/team/ilman.jpg" 
+                            alt="Muhamad Ilman Pauji"
+                            class="w-32 h-32 rounded-full mx-auto object-cover border-4 border-white/30 mb-4"
+                            onerror="this.src='https://i.pravatar.cc/150?u=ilman'"
+                        >
+                        <h4 class="font-bold text-xl mb-2">Muhamad Ilman Pauji</h4>
+                        <div class="inline-flex items-center gap-2 bg-white/20 px-3 py-1 rounded-full mb-2">
+                            <i class="fas fa-id-card text-xs"></i>
+                            <span class="text-sm font-semibold">2510614070</span>
+                        </div>
+                        <p class="text-blue-200 text-sm mb-4">
+                            <i class="fas fa-project-diagram mr-1"></i>
+                            Project Manager
+                        </p>
+                        <div class="flex items-center justify-center gap-3">
+                            <a href="https://instagram.com/ilmanpauji" target="_blank" rel="noopener noreferrer" class="text-white hover:text-blue-200" title="Instagram">
+                                <i class="fab fa-instagram text-xl"></i>
+                            </a>
+                            <a href="https://linkedin.com/in/ilmanpauji" target="_blank" rel="noopener noreferrer" class="text-white hover:text-blue-200" title="LinkedIn">
+                                <i class="fab fa-linkedin text-xl"></i>
+                            </a>
+                            <a href="https://github.com/ilmanpauji" target="_blank" rel="noopener noreferrer" class="text-white hover:text-blue-200" title="GitHub">
+                                <i class="fab fa-github text-xl"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Copyright -->
+            <div class="text-center text-slate-600">
+                <p class="text-sm mb-2">
+                    <i class="fas fa-graduation-cap mr-2"></i>
+                    Implementasi Logika Proposisional untuk Mitigasi Bencana Aceh
+                </p>
+                <p class="text-xs text-slate-500">
+                    © 2025 - Sistem Pakar Mitigasi Bencana
+                </p>
+                <p class="text-xs mt-1 text-blue-600 font-semibold">
+                    <i class="fab fa-python mr-1"></i>
+                    Powered by Flask Python Backend
+                </p>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        // ============================================
+        // API CONFIGURATION
+        // ============================================
+        
+        const API_BASE_URL = window.location.origin;
+        
+        // ============================================
+        // API CALLS
+        // ============================================
+        
+        async function calculateRiskAPI(p, q, r) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/calculate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ p, q, r })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('API request failed');
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('Error calling API:', error);
+                return null;
+            }
+        }
+        
+        async function getTruthTableAPI() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/truth-table`);
+                
+                if (!response.ok) {
+                    throw new Error('API request failed');
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('Error calling API:', error);
+                return null;
+            }
+        }
+        
+        // ============================================
+        // TRUTH TABLE GENERATION
+        // ============================================
+        
+        async function generateTruthTable() {
+            const tbody = document.getElementById('truth-table-body');
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8"><div class="spinner mx-auto"></div></td></tr>';
+            
+            const data = await getTruthTableAPI();
+            
+            if (!data || !data.success) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-red-600">Error loading truth table</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            
+            data.table.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                tr.id = `row-${row.p ? 1 : 0}-${row.q ? 1 : 0}-${row.r ? 1 : 0}`;
+                tr.className = 'hover:bg-slate-50';
+                
+                // Helper function to create cell with icon
+                const createCell = (value) => {
+                    const cell = document.createElement('td');
+                    cell.className = 'border-2 border-slate-300 px-6 py-4 text-center';
+                    cell.innerHTML = value 
+                        ? '<i class="fas fa-check-circle text-green-600 text-2xl"></i><div class="text-sm font-bold mt-1">TRUE (1)</div>'
+                        : '<i class="fas fa-times-circle text-red-600 text-2xl"></i><div class="text-sm font-bold mt-1">FALSE (0)</div>';
+                    return cell;
+                };
+                
+                tr.appendChild(createCell(row.p));
+                tr.appendChild(createCell(row.q));
+                tr.appendChild(createCell(row.r));
+                tr.appendChild(createCell(row.q_or_r));
+                
+                // Result cell with special styling
+                const resultCell = document.createElement('td');
+                resultCell.className = `border-2 border-slate-300 px-6 py-4 text-center font-bold ${row.result ? 'bg-red-100' : 'bg-green-100'}`;
+                resultCell.innerHTML = row.result 
+                    ? '<i class="fas fa-exclamation-triangle text-red-600 text-3xl"></i><div class="text-sm font-bold mt-2 text-red-700">BANJIR</div>'
+                    : '<i class="fas fa-shield-alt text-green-600 text-3xl"></i><div class="text-sm font-bold mt-2 text-green-700">AMAN</div>';
+                tr.appendChild(resultCell);
+                
+                tbody.appendChild(tr);
+            });
+        }
+        
+        // ============================================
+        // UI UPDATE SYSTEM
+        // ============================================
+        
+        async function updateSystem() {
+            // Get current state from toggles
+            const p = document.getElementById('toggle-p').checked;
+            const q = document.getElementById('toggle-q').checked;
+            const r = document.getElementById('toggle-r').checked;
+            
+            // Show loading state
+            document.getElementById('logic-trace').innerHTML = '<div class="flex justify-center py-8"><div class="spinner"></div></div>';
+            document.getElementById('recommendation').innerHTML = '<div class="flex justify-center py-4"><div class="spinner"></div></div>';
+            
+            // Call Python backend API
+            const data = await calculateRiskAPI(p, q, r);
+            
+            if (!data || !data.success) {
+                document.getElementById('logic-trace').innerHTML = '<div class="text-red-600 text-center py-4">Error: Unable to connect to Python backend</div>';
+                document.getElementById('recommendation').innerHTML = '<div class="text-red-600 text-center py-4">Error loading recommendation</div>';
+                return;
+            }
+            
+            // Update UI with backend results
+            updateLogicTrace(data.p, data.q, data.r, data.q_or_r, data.result);
+            updateStatusCard(data.result);
+            updateRecommendation(data.recommendation);
+            highlightTruthTableRow(data.p, data.q, data.r);
+            
+            // Add to history
+            addToHistory(data.p, data.q, data.r, data.result, data.recommendation);
+        }
+        
+        function updateLogicTrace(p, q, r, qOrR, result) {
+            const traceDiv = document.getElementById('logic-trace');
+            
+            traceDiv.innerHTML = `
+                <div class="flex items-start gap-3 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                    <i class="fas fa-arrow-right text-blue-600 mt-1"></i>
+                    <div>
+                        <p class="font-semibold text-slate-800">Step 1: Evaluasi (q ∨ r)</p>
+                        <p class="text-slate-600 text-sm mt-1">
+                            Lahan Sawit (${q ? 'TRUE' : 'FALSE'}) OR Sungai Buruk (${r ? 'TRUE' : 'FALSE'}) = 
+                            <span class="font-bold ${qOrR ? 'text-green-600' : 'text-red-600'}">${qOrR ? 'TRUE' : 'FALSE'}</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start gap-3 p-4 bg-purple-50 rounded-lg border-l-4 border-purple-500">
+                    <i class="fas fa-arrow-right text-purple-600 mt-1"></i>
+                    <div>
+                        <p class="font-semibold text-slate-800">Step 2: Evaluasi p ∧ (Step 1)</p>
+                        <p class="text-slate-600 text-sm mt-1">
+                            Hujan Tinggi (${p ? 'TRUE' : 'FALSE'}) AND Step 1 (${qOrR ? 'TRUE' : 'FALSE'}) = 
+                            <span class="font-bold ${result ? 'text-red-600' : 'text-green-600'}">${result ? 'TRUE' : 'FALSE'}</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start gap-3 p-4 ${result ? 'bg-red-50 border-red-500' : 'bg-green-50 border-green-500'} rounded-lg border-l-4">
+                    <i class="fas fa-flag-checkered ${result ? 'text-red-600' : 'text-green-600'} mt-1"></i>
+                    <div>
+                        <p class="font-semibold text-slate-800">Result: Risiko Banjir (S)</p>
+                        <p class="text-slate-600 text-sm mt-1">
+                            <span class="font-bold text-xl ${result ? 'text-red-600' : 'text-green-600'}">
+                                ${result ? 'BANJIR TERDETEKSI' : 'KONDISI AMAN'}
+                            </span>
+                        </p>
+                        <p class="text-xs text-slate-500 mt-2">
+                            <i class="fab fa-python mr-1"></i>
+                            Calculated by Python Backend
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function updateStatusCard(result) {
+            const statusCard = document.getElementById('status-card');
+            const statusIcon = document.getElementById('status-icon');
+            const statusTitle = document.getElementById('status-title');
+            const statusSubtitle = document.getElementById('status-subtitle');
+            
+            if (result) {
+                // DANGER STATE
+                statusCard.className = 'rounded-2xl shadow-2xl p-8 text-center bg-gradient-to-br from-red-500 to-red-700 text-white pulse-danger';
+                statusIcon.className = 'fas fa-exclamation-triangle text-6xl';
+                statusTitle.textContent = 'PERINGATAN BANJIR!';
+                statusSubtitle.textContent = 'Risiko Tinggi - Segera Ambil Tindakan';
+            } else {
+                // SAFE STATE
+                statusCard.className = 'rounded-2xl shadow-2xl p-8 text-center bg-gradient-to-br from-green-500 to-green-700 text-white';
+                statusIcon.className = 'fas fa-shield-alt text-6xl';
+                statusTitle.textContent = 'KONDISI AMAN';
+                statusSubtitle.textContent = 'Tidak Ada Risiko Banjir Terdeteksi';
+            }
+        }
+        
+        function updateRecommendation(recommendation) {
+            const recDiv = document.getElementById('recommendation');
+            
+            recDiv.innerHTML = `
+                <div class="flex items-start gap-4">
+                    <i class="fas ${recommendation.icon} text-4xl ${recommendation.color}"></i>
+                    <div>
+                        <h4 class="text-xl font-bold text-slate-800 mb-2">${recommendation.title}</h4>
+                        <p class="text-slate-700 leading-relaxed whitespace-pre-line">${recommendation.text}</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function highlightTruthTableRow(p, q, r) {
+            // Remove all highlights
+            document.querySelectorAll('#truth-table-body tr').forEach(row => {
+                row.classList.remove('highlight-row');
+            });
+            
+            // Add highlight to current row
+            const rowId = `row-${p ? 1 : 0}-${q ? 1 : 0}-${r ? 1 : 0}`;
+            const currentRow = document.getElementById(rowId);
+            if (currentRow) {
+                currentRow.classList.add('highlight-row');
+                // Auto-scroll removed - user requested not to scroll automatically
+            }
+        }
+        
+        // ============================================
+        // ARTICLES LOADING
+        // ============================================
+        
+        async function loadArticles() {
+            const container = document.getElementById('articles-container');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/articles`);
+                const data = await response.json();
+                
+                if (!data.success || !data.articles) {
+                    throw new Error('Failed to load articles');
+                }
+                
+                container.innerHTML = '';
+                
+                data.articles.forEach(article => {
+                    const articleCard = createArticleCard(article);
+                    container.appendChild(articleCard);
+                });
+                
+            } catch (error) {
+                console.error('Error loading articles:', error);
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-8 text-red-600">
+                        <i class="fas fa-exclamation-circle text-4xl mb-3"></i>
+                        <p>Gagal memuat artikel. Silakan refresh halaman.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function createArticleCard(article) {
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2';
+            
+            // Category badge color
+            const categoryColors = {
+                'Tips': 'bg-blue-100 text-blue-800',
+                'Teknologi': 'bg-purple-100 text-purple-800',
+                'Lingkungan': 'bg-green-100 text-green-800',
+                'Infrastruktur': 'bg-orange-100 text-orange-800',
+                'Kesiapsiagaan': 'bg-red-100 text-red-800',
+                'Edukasi': 'bg-yellow-100 text-yellow-800'
+            };
+            
+            const badgeColor = categoryColors[article.category] || 'bg-gray-100 text-gray-800';
+            
+            card.innerHTML = `
+                <div class="relative">
+                    <img 
+                        src="${article.image}" 
+                        alt="${article.image_alt}"
+                        class="w-full h-48 object-cover"
+                        loading="lazy"
+                    >
+                    <div class="absolute top-3 left-3">
+                        <span class="px-3 py-1 ${badgeColor} text-xs font-semibold rounded-full">
+                            ${article.category}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    <div class="flex items-center gap-2 text-xs text-slate-500 mb-3">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>${formatDate(article.date)}</span>
+                        <span class="mx-2">•</span>
+                        <i class="fas fa-user"></i>
+                        <span>${article.author}</span>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold text-slate-800 mb-3 line-clamp-2">
+                        ${article.title}
+                    </h3>
+                    
+                    <p class="text-slate-600 text-sm mb-4 line-clamp-3">
+                        ${article.excerpt}
+                    </p>
+                    
+                    <button class="text-blue-600 hover:text-blue-800 font-semibold text-sm flex items-center gap-2 group">
+                        Baca Selengkapnya
+                        <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    </button>
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', options);
+        }
+        
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        
+        // Load history from localStorage
+        loadHistoryFromStorage();
+        
+        // Generate truth table on page load
+        generateTruthTable();
+        
+        // Load articles
+        loadArticles();
+        
+        // Initialize with default state (all false)
+        updateSystem();
+        
+        // ============================================
+        // HISTORY MANAGEMENT
+        // ============================================
+        
+        let analysisHistory = [];
+        
+        function loadHistoryFromStorage() {
+            const stored = localStorage.getItem('analysisHistory');
+            if (stored) {
+                try {
+                    analysisHistory = JSON.parse(stored);
+                    updateHistoryDisplay();
+                } catch (e) {
+                    console.error('Error loading history:', e);
+                    analysisHistory = [];
+                }
+            }
+        }
+        
+        function saveHistoryToStorage() {
+            try {
+                localStorage.setItem('analysisHistory', JSON.stringify(analysisHistory));
+            } catch (e) {
+                console.error('Error saving history:', e);
+            }
+        }
+        
+        function addToHistory(p, q, r, result, recommendation) {
+            const timestamp = new Date();
+            const historyItem = {
+                id: Date.now(),
+                timestamp: timestamp.toISOString(),
+                p: p,
+                q: q,
+                r: r,
+                result: result,
+                recommendation: recommendation,
+                displayTime: formatDateTime(timestamp)
+            };
+            
+            // Add to beginning of array
+            analysisHistory.unshift(historyItem);
+            
+            // Keep only last 50 items
+            if (analysisHistory.length > 50) {
+                analysisHistory = analysisHistory.slice(0, 50);
+            }
+            
+            saveHistoryToStorage();
+            updateHistoryDisplay();
+        }
+        
+        function updateHistoryDisplay() {
+            const container = document.getElementById('history-container');
+            const emptyState = document.getElementById('history-empty');
+            const statsSection = document.getElementById('history-stats');
+            
+            if (analysisHistory.length === 0) {
+                container.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                statsSection.classList.add('hidden');
+                return;
+            }
+            
+            container.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            statsSection.classList.remove('hidden');
+            
+            // Update statistics
+            const totalAnalyses = analysisHistory.length;
+            const floodDetected = analysisHistory.filter(item => item.result).length;
+            const safeConditions = totalAnalyses - floodDetected;
+            
+            document.getElementById('total-analyses').textContent = totalAnalyses;
+            document.getElementById('flood-detected').textContent = floodDetected;
+            document.getElementById('safe-conditions').textContent = safeConditions;
+            
+            // Render history items
+            container.innerHTML = analysisHistory.map(item => createHistoryItemHTML(item)).join('');
+        }
+        
+        function createHistoryItemHTML(item) {
+            const statusClass = item.result ? 'bg-red-50 border-red-200' : 'bg-green-50 border-green-200';
+            const statusIcon = item.result ? 'fa-exclamation-triangle text-red-600' : 'fa-shield-alt text-green-600';
+            const statusText = item.result ? 'BANJIR TERDETEKSI' : 'KONDISI AMAN';
+            const statusColor = item.result ? 'text-red-700' : 'text-green-700';
+            
+            return `
+                <div class="border-2 ${statusClass} rounded-xl p-4 hover:shadow-lg transition-all duration-300">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-3">
+                                <i class="fas ${statusIcon} text-2xl"></i>
+                                <div>
+                                    <p class="font-bold ${statusColor} text-lg">${statusText}</p>
+                                    <p class="text-xs text-slate-500">
+                                        <i class="fas fa-clock mr-1"></i>
+                                        ${item.displayTime}
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2 mb-3">
+                                <div class="bg-white p-2 rounded border ${item.p ? 'border-blue-300 bg-blue-50' : 'border-slate-200'}">
+                                    <p class="text-xs text-slate-600">Hujan</p>
+                                    <p class="font-bold ${item.p ? 'text-blue-600' : 'text-slate-400'}">${item.p ? 'YA' : 'TIDAK'}</p>
+                                </div>
+                                <div class="bg-white p-2 rounded border ${item.q ? 'border-green-300 bg-green-50' : 'border-slate-200'}">
+                                    <p class="text-xs text-slate-600">Lahan</p>
+                                    <p class="font-bold ${item.q ? 'text-green-600' : 'text-slate-400'}">${item.q ? 'RUSAK' : 'BAIK'}</p>
+                                </div>
+                                <div class="bg-white p-2 rounded border ${item.r ? 'border-cyan-300 bg-cyan-50' : 'border-slate-200'}">
+                                    <p class="text-xs text-slate-600">Sungai</p>
+                                    <p class="font-bold ${item.r ? 'text-cyan-600' : 'text-slate-400'}">${item.r ? 'BURUK' : 'BAIK'}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white p-3 rounded border border-slate-200">
+                                <p class="text-xs text-slate-600 mb-1">Rekomendasi:</p>
+                                <p class="text-sm font-semibold text-slate-800">${item.recommendation.title}</p>
+                            </div>
+                        </div>
+                        
+                        <button 
+                            onclick="deleteHistoryItem(${item.id})" 
+                            class="text-slate-400 hover:text-red-600 transition-colors p-2"
+                            aria-label="Hapus item ini"
+                        >
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function deleteHistoryItem(id) {
+            if (confirm('Hapus item ini dari riwayat?')) {
+                analysisHistory = analysisHistory.filter(item => item.id !== id);
+                saveHistoryToStorage();
+                updateHistoryDisplay();
+            }
+        }
+        
+        function clearHistory() {
+            if (confirm('Hapus semua riwayat analisis? Tindakan ini tidak dapat dibatalkan.')) {
+                analysisHistory = [];
+                saveHistoryToStorage();
+                updateHistoryDisplay();
+            }
+        }
+        
+        function formatDateTime(date) {
+            const options = { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            return date.toLocaleDateString('id-ID', options);
+        }
+        
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+        
+        function resetToggles() {
+            document.getElementById('toggle-p').checked = false;
+            document.getElementById('toggle-q').checked = false;
+            document.getElementById('toggle-r').checked = false;
+            updateSystem();
+        }
+        
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Alt + P: Toggle rainfall
+            if (e.altKey && e.key === 'p') {
+                e.preventDefault();
+                const toggle = document.getElementById('toggle-p');
+                toggle.checked = !toggle.checked;
+                updateSystem();
+            }
+            // Alt + Q: Toggle deforestation
+            if (e.altKey && e.key === 'q') {
+                e.preventDefault();
+                const toggle = document.getElementById('toggle-q');
+                toggle.checked = !toggle.checked;
+                updateSystem();
+            }
+            // Alt + R: Toggle drainage
+            if (e.altKey && e.key === 'r') {
+                e.preventDefault();
+                const toggle = document.getElementById('toggle-r');
+                toggle.checked = !toggle.checked;
+                updateSystem();
+            }
+            // Alt + 0: Reset all
+            if (e.altKey && e.key === '0') {
+                e.preventDefault();
+                resetToggles();
+            }
+        });
+        
+        // Performance monitoring
+        console.log('%c🌊 Sistem Pakar Mitigasi Bencana Aceh', 'color: #3b82f6; font-size: 20px; font-weight: bold;');
+        console.log('%cKeyboard Shortcuts:', 'color: #10b981; font-size: 14px; font-weight: bold;');
+        console.log('Alt + P: Toggle Curah Hujan');
+        console.log('Alt + Q: Toggle Alih Fungsi Lahan');
+        console.log('Alt + R: Toggle Sungai Dangkal');
+        console.log('Alt + 0: Reset All');
+    </script>
+</body>
+</html>
